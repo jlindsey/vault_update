@@ -32,13 +32,26 @@ def main():
     with temp.file as f:
         f.write(json.dumps(data, indent=2, separators=(',', ': ')))
 
-    call([os.environ['EDITOR'], temp.name])
+    try:
+        call([os.environ['EDITOR'], temp.name])
+    except CalledProcessError:
+        print("ERR: Unable to open your EDITOR")
+        sys.exit(1)
 
     with open(temp.name, 'r') as f:
-        data = json.loads(f.read())
+        try:
+            data = json.loads(f.read())
+        except ValueError as e:
+            print("ERR: Unable to parse JSON")
+            print(e.message)
+            sys.exit(1)
 
     vault_args = ['vault', 'write', '-address=%s' % __vault_url__, 'secret/%s' % args.key]
     for key, val in data.iteritems():
         vault_args.append('%s=%s' % (key, val))
 
-    call(vault_args)
+    try:
+        call(vault_args)
+    except CalledProcessError:
+        print("ERR: Unable to write data back to Vault key")
+        sys.exit(1)
