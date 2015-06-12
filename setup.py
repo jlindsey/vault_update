@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 from codecs import open
 from os import path
 
@@ -23,10 +23,10 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     keywords='vault util cli',
-    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+    packages=['vault_update'],
     entry_points={
         'console_scripts': [
-            'vault_update=vault_update:main'
+            'vault_update=vault_update.cli:main'
         ]
     },
 )
